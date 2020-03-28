@@ -77,5 +77,8 @@ function rgbToString(square: any) {
 	return `rgb(${dim(square.red)}, ${dim(square.green)}, ${dim(square.blue)})`;
 }
 
+// TODO
+// Add a save function.
+// Add a color picker.
 
 createGrid(gridSideCount);
