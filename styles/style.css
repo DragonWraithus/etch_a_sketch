@@ -1,5 +1,9 @@
 body {
 	background: grey;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: flex-start;
 }
 
 .sketch_container {
@@ -24,3 +28,7 @@ body {
 	display: flex;
 }
 
+.controls {
+	display: flex;
+	flex-direction: column;
+}
