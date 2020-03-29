@@ -4,7 +4,10 @@ var _a, _b;
 const gridContainer = document.querySelector('div');
 const resetBtn = document.querySelector('.reset');
 const setSidesBtn = document.querySelector('.squares');
+const colorPicker = document.querySelector('#color_picker');
+const colorResetBtn = document.querySelector('.color_reset');
 const sideLength = 960;
+let squareColor = '';
 let gridSideCount = 16;
 let squareSize = String(sideLength / gridSideCount) + 'px';
 function createGrid(gridSideLength) {
@@ -18,7 +21,12 @@ function createGrid(gridSideLength) {
             const divCol = createDiv(divRow, 'col', (squareSize), squareSize);
             (_a = divCol) === null || _a === void 0 ? void 0 : _a.addEventListener('mouseenter', (e) => {
                 grid[row][col].brightness--;
-                divCol.style.background = rgbToString(grid[row][col]);
+                if (squareColor) {
+                    divCol.style.background = String(squareColor);
+                }
+                else {
+                    divCol.style.background = rgbToString(grid[row][col]);
+                }
             });
         }
     }
@@ -51,8 +59,9 @@ function removeChildren(node) {
     Array.from(node.children).forEach(child => node.removeChild(child));
 }
 function genRGB() {
-    // random number between 0 and 256.
+    // Random number between 0 and 256.
     let gen256 = () => Math.floor(Math.random() * 256);
+    // Return an rgb object.
     return {
         red: gen256(),
         green: gen256(),
@@ -62,5 +71,13 @@ function genRGB() {
 function rgbToString(square) {
     let dim = (color) => (square.brightness / 10) * color;
     return `rgb(${dim(square.red)}, ${dim(square.green)}, ${dim(square.blue)})`;
+}
+// TODO
+// Add a save function.
+colorPicker.addEventListener('change', watchColorPicker, false);
+colorResetBtn.addEventListener('click', () => squareColor = '');
+function watchColorPicker(event) {
+    squareColor = event.target.value;
+    console.log(String(squareColor));
 }
 createGrid(gridSideCount);

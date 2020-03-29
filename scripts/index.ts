@@ -3,7 +3,10 @@
 const gridContainer = document.querySelector('div')!;
 const resetBtn = document.querySelector('.reset')!;
 const setSidesBtn = document.querySelector('.squares')!;
+const colorPicker = document.querySelector('#color_picker')!;
+const colorResetBtn = document.querySelector('.color_reset')!;
 const sideLength: number = 960;
+let squareColor: string = '';
 let gridSideCount: number = 16;
 let squareSize: string = String(sideLength / gridSideCount) + 'px';
 
@@ -18,7 +21,11 @@ function createGrid(gridSideLength: number) {
 			const divCol = createDiv(divRow, 'col', (squareSize), squareSize);
 			divCol?.addEventListener('mouseenter', (e: any) => {
 				grid[row][col].brightness--;
-				divCol.style.background = rgbToString(grid[row][col]);
+				if (squareColor) {
+					divCol.style.background = String(squareColor);
+				} else {
+					divCol.style.background = rgbToString(grid[row][col]);
+				}
 			});
 		}
 	}
@@ -79,6 +86,12 @@ function rgbToString(square: any) {
 
 // TODO
 // Add a save function.
-// Add a color picker.
+colorPicker.addEventListener('change', watchColorPicker, false);
+colorResetBtn.addEventListener('click', () => squareColor = '');
+
+function watchColorPicker(event: any) {
+	squareColor = event.target.value;
+	console.log(String(squareColor));
+}
 
 createGrid(gridSideCount);
