@@ -1,62 +1,70 @@
 // Please edit the typescript file, index.js should not be edited directly.
 "use strict"
-const gridContainer = document.querySelector('div')!;
-const resetBtn = document.querySelector('.reset')!;
-const setSidesBtn = document.querySelector('.squares')!;
-const colorPicker = document.querySelector('#color_picker')!;
-const colorResetBtn = document.querySelector('.color_reset')!;
-const sideLength: number = 960;
-let squareColor: string = '';
-let gridSideCount: number = 16;
-let squareSize: string = String(sideLength / gridSideCount) + 'px';
-
-function createGrid(gridSideLength: number) {
-	let grid: Array<Array<any>> = [];
-
-	for (let row = 0; row < gridSideLength; row++) {
-		grid.push([]);
-		const divRow = createDiv(gridContainer, 'row', '100%', squareSize);
-		for (let col = 0; col < gridSideLength; col++) {
-			grid[row].push({brightness: 10, ...genRGB()});
-			const divCol = createDiv(divRow, 'col', (squareSize), squareSize);
-			divCol?.addEventListener('mouseenter', (e: any) => {
-				grid[row][col].brightness--;
-				if (squareColor) {
-					divCol.style.background = String(squareColor);
-				} else {
-					divCol.style.background = rgbToString(grid[row][col]);
-				}
-			});
-		}
-	}
+const page = {
+	gridContainer: document.querySelector('div')!,
+	resetBtn: document.querySelector('.reset')!,
+	setSidesBtn: document.querySelector('.squares')!,
+	colorPicker: document.querySelector('#color_picker')!,
+	colorResetBtn: document.querySelector('.color_reset')!,
+	sideLength: 600,
 }
 
-resetBtn?.addEventListener('click', () => {
-	const divCols = document.querySelectorAll('.col');
-	cleanBoard(gridSideCount);
-});
+/* Model */
 
-setSidesBtn?.addEventListener('click', (e) => {
+let grid: Array<Array<any>> = [];
+let gridSideCount: number = 16;
+let squareSize: string = String(page.sideLength / gridSideCount) + 'px';
+let squareColor: string = '';
+
+/* View */
+
+page.colorPicker.addEventListener('change', watchColorPicker, false);
+page.colorResetBtn.addEventListener('click', () => squareColor = '');
+page.resetBtn.addEventListener('click', clearBoard);
+page.setSidesBtn.addEventListener('click', getSideLength);
+	
+function getSideLength() {
 	do {
 		gridSideCount = Number(prompt("How many squares per side?"));
 	} while (gridSideCount == NaN && gridSideCount <= 0)
 
 	cleanBoard(gridSideCount);
-});
+}
 
-function cleanBoard(gridSideCount: number){
-	squareSize = String(sideLength / gridSideCount) + 'px';
-	removeChildren(gridContainer);
+	function cleanBoard(gridSideCount: number){
+		squareSize = String(page.sideLength / gridSideCount) + 'px';
+		removeChildren(page.gridContainer);
 	createGrid(gridSideCount);
 }
 
-function createDiv(currentNode: HTMLDivElement, nodeId: string, nodeWidth: string, nodeHeight: string) {
+function clearBoard() {
+	const divCols = document.querySelectorAll('.col');
+	cleanBoard(gridSideCount);
+}
+
+function watchColorPicker(event: any) {
+	squareColor = event.target.value;
+}
+
+// Bypass default listener arguments.
+function mouseenterEventOn(square: any) {
+	square.div?.addEventListener('mouseenter', () => {
+		square.b_rgb.brightness--;
+		if (squareColor) {
+			square.div.style.background = String(squareColor);
+		} else {
+			square.div.style.background = rgbToString(square.b_rgb);
+		}
+	});
+}
+
+function createDiv(currentNode: HTMLDivElement, nodeId: string, nodeWidth: string) {
 	const div = document.createElement('div');
 
 	div.setAttribute('class', nodeId);
 		div.setAttribute('style', `
 		width: ${nodeWidth}; 
-		height: ${nodeHeight};`
+		height: ${squareSize};`
 	);
 
 	currentNode.appendChild(div);
@@ -66,6 +74,8 @@ function createDiv(currentNode: HTMLDivElement, nodeId: string, nodeWidth: strin
 function removeChildren(node: HTMLDivElement) {
 	Array.from(node.children).forEach(child => node.removeChild(child));
 }
+
+/* Controller */
 
 function genRGB() {
 	// Random number between 0 and 256.
@@ -79,19 +89,26 @@ function genRGB() {
 	};
 }
 
-function rgbToString(square: any) {
-	let dim = (color: number) => (square.brightness / 10) * color;
-	return `rgb(${dim(square.red)}, ${dim(square.green)}, ${dim(square.blue)})`;
+function rgbToString(b_rgb: any) {
+	let dim = (color: number) => (b_rgb.brightness / 10) * color;
+	return `rgb(${dim(b_rgb.red)}, ${dim(b_rgb.green)}, ${dim(b_rgb.blue)})`;
 }
 
-// TODO
-// Add a save function.
-colorPicker.addEventListener('change', watchColorPicker, false);
-colorResetBtn.addEventListener('click', () => squareColor = '');
+function createGrid(gridSideLength: number) {
+	grid = [];
 
-function watchColorPicker(event: any) {
-	squareColor = event.target.value;
-	console.log(String(squareColor));
+	for (let row = 0; row < gridSideLength; row++) {
+		grid.push([]);
+		const divRow = createDiv(page.gridContainer, 'row', '100%');
+		for (let col = 0; col < gridSideLength; col++) {
+			const divSquare = createDiv(divRow, 'col', squareSize);
+			grid[row].push({div: divSquare, b_rgb: {brightness: 10, ...genRGB()}});
+			mouseenterEventOn(grid[row][col]);
+		}
+	}
 }
 
 createGrid(gridSideCount);
+
+// TODO
+// ? Add a save function.
