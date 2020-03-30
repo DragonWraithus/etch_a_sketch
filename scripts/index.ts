@@ -20,7 +20,7 @@ let squareColor: string = '';
 
 page.colorPicker.addEventListener('change', watchColorPicker, false);
 page.colorResetBtn.addEventListener('click', () => squareColor = '');
-page.resetBtn.addEventListener('click', clearBoard);
+page.resetBtn.addEventListener('click', cleanBoard);
 page.setSidesBtn.addEventListener('click', getSideLength);
 	
 function getSideLength() {
@@ -28,18 +28,13 @@ function getSideLength() {
 		gridSideCount = Number(prompt("How many squares per side?"));
 	} while (gridSideCount == NaN && gridSideCount <= 0)
 
-	cleanBoard(gridSideCount);
+	cleanBoard();
 }
 
-	function cleanBoard(gridSideCount: number){
-		squareSize = String(page.sideLength / gridSideCount) + 'px';
-		removeChildren(page.gridContainer);
+function cleanBoard(){
+	squareSize = String(page.sideLength / gridSideCount) + 'px';
+	removeChildren(page.gridContainer);
 	createGrid(gridSideCount);
-}
-
-function clearBoard() {
-	const divCols = document.querySelectorAll('.col');
-	cleanBoard(gridSideCount);
 }
 
 function watchColorPicker(event: any) {
